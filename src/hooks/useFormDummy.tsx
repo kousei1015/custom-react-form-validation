@@ -30,27 +30,21 @@ const useFormDumy = () => {
       name,
       onChange: (event: React.ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value;
-
-        // バリデーションルールが存在し、条件に合致しない場合、エラーメッセージを設定
+        
+        // バリデーションルールが存在し、かつ条件に違反する場合、エラーメッセージを設定
         if (rules.minLength && value.length < rules.minLength.value) {
           errorsRef.current[name] = {
             message: rules.minLength.message,
           };
         } else {
-          // 条件に合致する場合はエラーを削除
+          // 条件に違反しない場合はエラーを削除
           delete errorsRef.current[name];
         }
 
-        // 新しいエラーオブジェクトを生成
-        const newError = { ...errorsRef.current };
-
         // 前回のエラーと新しいエラーを比較し、異なる場合にのみエラーステートを更新
-        if (JSON.stringify(errors) !== JSON.stringify(newError)) {
-          setErrors(newError);
+        if (JSON.stringify(errors) !== JSON.stringify(errorsRef.current)) {
+          setErrors({ ...errorsRef.current });
         }
-
-        // refにエラー情報を更新
-        errorsRef.current = { ...newError };
       },
     };
   };

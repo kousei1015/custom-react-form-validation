@@ -38,34 +38,28 @@ const useFormDumy = () => {
 
   // フィールドを登録する register 関数
   const register = (name: string, rules: Rules) => {
-
+    // フィールドの状態を保持する useRef
     fields.current[name] = { value: "", rules };
 
     return {
       name,
       onChange: (event: React.ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value;
-
-        // バリデーションルールが存在し、条件に合致しない場合、エラーメッセージを設定
+        
+        // バリデーションルールが存在し、かつ条件に違反する場合、エラーメッセージを設定
         if (rules.minLength && value.length < rules.minLength.value) {
           errorsRef.current[name] = {
             message: rules.minLength.message,
           };
         } else {
-          // 条件に合致する場合はエラーを削除
+          // 条件に違反しない場合はエラーを削除
           delete errorsRef.current[name];
         }
 
-        // 新しいエラーオブジェクトを生成
-        const newError = { ...errorsRef.current };
-
         // 前回のエラーと新しいエラーを比較し、異なる場合にのみエラーステートを更新
-        if (JSON.stringify(errors) !== JSON.stringify(newError)) {
-          setErrors(newError);
+        if (JSON.stringify(errors) !== JSON.stringify(errorsRef.current)) {
+          setErrors({ ...errorsRef.current });
         }
-
-        // refにエラー情報を更新
-        errorsRef.current = { ...newError };
       },
     };
   };
@@ -90,19 +84,21 @@ const App = () => {
     <>
       <input
         type="text"
-        {...register("firstName", {
+        placeholder="文字を3文字以上入力して"
+        {...register("example1", {
           minLength: { value: 3, message: "3文字以上入力してください" },
         })}
       />
-      {errors?.firstName && <p>{errors.firstName.message}</p>}
+      {errors?.example1 && <p>{errors.example1.message}</p>}
 
       <input
         type="text"
-        {...register("lastName", {
+        placeholder="文字を3文字以上入力して"
+        {...register("example2", {
           minLength: { value: 3, message: "3文字以上入力してください" },
         })}
       />
-      {errors?.lastName && <p>{errors.lastName.message}</p>}
+      {errors?.example2 && <p>{errors.example2.message}</p>}
     </>
   );
 };
