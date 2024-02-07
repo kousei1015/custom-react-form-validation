@@ -1,7 +1,12 @@
 import useFormDumy from "./hooks/useFormDummy";
 
+type InputData = {
+  example1: string;
+  example2: string;
+}
+
 const App = () => {
-  const { register, errors } = useFormDumy();
+  const { register, errors } = useFormDumy<InputData>();
 
   console.log("Componentがレンダリングされました");
 
@@ -11,7 +16,7 @@ const App = () => {
         type="text"
         placeholder="文字を3文字以上入力して"
         {...register("example1", {
-          minLength: { value: 3, message: "3文字以上入力してください" },
+          minLength: { value: 5, message: "3文字以上入力してください" },
         })}
       />
       {errors?.example1 && <p>{errors.example1.message}</p>}
@@ -29,3 +34,4 @@ const App = () => {
 };
 
 export default App;
+

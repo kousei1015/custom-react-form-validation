@@ -6,31 +6,24 @@ type Rules = {
 };
 
 // エラーオブジェクトの型定義
-type Errors = Record<string, { message: string }>;
+type Errors<T> = Record<keyof T, { message: string }>;
 
-// フィールドの型定義
-type FieldsType = Record<string, { value: string; rules: Rules }>;
-
-const useFormDumy = () => {
-  // フィールドの状態を保持する useRef
-  const fields = useRef<FieldsType>({});
+const useFormDumy = <T extends Record<string, unknown>>() => {
 
   // エラーオブジェクトを保持する useRef
-  const errorsRef = useRef<Errors>({});
+  const errorsRef = useRef({} as Errors<T>);
 
   // エラー状態を保持する useState
-  const [errors, setErrors] = useState<Errors>({});
+  const [errors, setErrors] = useState({} as Errors<T>);
 
   // フィールドを登録する register 関数
-  const register = (name: string, rules: Rules) => {
-    // フィールドの状態を保持する useRef
-    fields.current[name] = { value: "", rules };
+  const register = (name: keyof T, rules: Rules) => {
 
     return {
       name,
       onChange: (event: React.ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value;
-        
+
         // バリデーションルールが存在し、かつ条件に違反する場合、エラーメッセージを設定
         if (rules.minLength && value.length < rules.minLength.value) {
           errorsRef.current[name] = {
@@ -41,9 +34,8 @@ const useFormDumy = () => {
           delete errorsRef.current[name];
         }
 
-        // 前回のエラーと新しいエラーを比較し、異なる場合にのみエラーステートを更新
-        if (JSON.stringify(errors) !== JSON.stringify(errorsRef.current)) {
-          setErrors({ ...errorsRef.current });
+        if(JSON.stringify(errors) !== JSON.stringify(errorsRef.current)) {
+          setErrors({...errorsRef.current})
         }
       },
     };
